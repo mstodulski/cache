@@ -1,0 +1,25 @@
+{
+	"name": "mstodulski/cache",
+	"license": "MIT",
+	"description": "",
+	"keywords": ["library", "apc", "apcu", "xcache"],
+	"homepage": "https://devsprint.pl",
+	"authors": [
+		{
+			"name": "Marcin Stodulski",
+			"homepage": "https://devsprint.pl",
+			"role": "Developer"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"mstodulski\\cache\\": ""
+		},
+		"exclude-from-classmap": [
+			"/test/"
+		]
+	},
+	"require": {
+		"php": "^8.0.0"
+	}
+}
