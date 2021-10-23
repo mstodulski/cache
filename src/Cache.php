@@ -47,7 +47,7 @@ class Cache
         }
     }
 
-    public static function getVariableValueFromCache(string $variableName) : bool
+    public static function getVariableValueFromCache(string $variableName) : mixed
     {
         $variableName = self::getVariablePath($variableName);
         $cacheSystem = self::getInstalledCache();
