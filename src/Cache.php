@@ -1,4 +1,5 @@
-<?php /** @noinspection ALL */
+<?php
+/** @noinspection ALL */
 
 /**
  * This file is part of the EasyCore package.
@@ -9,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-namespace mstodulski\Cache;
+namespace mstodulski\cache;
 
 class Cache
 {
