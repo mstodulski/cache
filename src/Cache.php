@@ -114,8 +114,8 @@ class Cache
                 return true;
                 break;
             case CacheSystem::apc:
-                apc_clear_cache('user');
                 /** @noinspection ALL */
+                apc_clear_cache('user');
                 apc_clear_cache();
                 return true;
             default:
