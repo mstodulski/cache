@@ -1,5 +1,4 @@
 <?php
-/** @noinspection ALL */
 
 /**
  * This file is part of the EasyCore package.
@@ -14,18 +13,14 @@ namespace mstodulski\cache;
 
 class Cache
 {
-    const CACHE_SYSTEM_XCACHE = 'xcache';
-    const CACHE_SYSTEM_APCU = 'apcu';
-    const CACHE_SYSTEM_APC = 'apc';
-
-    public static function getInstalledCache() :string|bool
+    public static function getInstalledCache() : CacheSystem|bool
     {
         if (function_exists('xcache_set')) {
-            return self::CACHE_SYSTEM_XCACHE;
+            return CacheSystem::xcache;
         } elseif (function_exists('apcu_add')) {
-            return self::CACHE_SYSTEM_APCU;
+            return CacheSystem::apcu;
         } elseif (function_exists('apc_add')) {
-            return self::CACHE_SYSTEM_APC;
+            return CacheSystem::apc;
         } else {
             return false;
         }
@@ -36,16 +31,13 @@ class Cache
         $variableName = self::getVariablePath($variableName);
         $cacheSystem = self::getInstalledCache();
 
-        switch ($cacheSystem) {
-            case self::CACHE_SYSTEM_XCACHE:
-                return xcache_isset($variableName);
-            case self::CACHE_SYSTEM_APCU:
-                return apcu_exists($variableName);
-            case self::CACHE_SYSTEM_APC:
-                return apc_exists($variableName);
-            default:
-                return false;
-        }
+        /** @noinspection ALL */
+        return match ($cacheSystem) {
+            CacheSystem::xcache => xcache_isset($variableName),
+            CacheSystem::apcu => apcu_exists($variableName),
+            CacheSystem::apc => apc_exists($variableName),
+            default => false,
+        };
     }
 
     public static function getVariableValueFromCache(string $variableName) : mixed
@@ -53,16 +45,13 @@ class Cache
         $variableName = self::getVariablePath($variableName);
         $cacheSystem = self::getInstalledCache();
 
-        switch ($cacheSystem) {
-            case self::CACHE_SYSTEM_XCACHE:
-                return xcache_get($variableName);
-            case self::CACHE_SYSTEM_APCU:
-                return apcu_fetch($variableName);
-            case self::CACHE_SYSTEM_APC:
-                return apc_fetch($variableName);
-            default:
-                return false;
-        }
+        /** @noinspection ALL */
+        return match ($cacheSystem) {
+            CacheSystem::xcache => xcache_get($variableName),
+            CacheSystem::apcu => apcu_fetch($variableName),
+            CacheSystem::apc => apc_fetch($variableName),
+            default => false,
+        };
     }
 
     public static function setVariableValueInCache(string $variableName, mixed $variableValue, int $expires = 300) : bool
@@ -70,16 +59,13 @@ class Cache
         $variableName = self::getVariablePath($variableName);
         $cacheSystem = self::getInstalledCache();
 
-        switch ($cacheSystem) {
-            case self::CACHE_SYSTEM_XCACHE:
-                return xcache_set($variableName, $variableValue, $expires);
-            case self::CACHE_SYSTEM_APCU:
-                return apcu_store($variableName, $variableValue, $expires);
-            case self::CACHE_SYSTEM_APC:
-                return apc_store($variableName, $variableValue, $expires);
-            default:
-                return false;
-        }
+        /** @noinspection ALL */
+        return match ($cacheSystem) {
+            CacheSystem::xcache => xcache_set($variableName, $variableValue, $expires),
+            CacheSystem::apcu => apcu_store($variableName, $variableValue, $expires),
+            CacheSystem::apc => apc_store($variableName, $variableValue, $expires),
+            default => false,
+        };
     }
 
     public static function removeVariableFromCache(string $variableName) : bool
@@ -87,16 +73,13 @@ class Cache
         $variableName = self::getVariablePath($variableName);
         $cacheSystem = self::getInstalledCache();
 
-        switch ($cacheSystem) {
-            case self::CACHE_SYSTEM_XCACHE:
-                return xcache_unset($variableName);
-            case self::CACHE_SYSTEM_APCU:
-                return apcu_delete($variableName);
-            case self::CACHE_SYSTEM_APC:
-                return apc_delete($variableName);
-            default:
-                return false;
-        }
+        /** @noinspection ALL */
+        return match ($cacheSystem) {
+            CacheSystem::xcache => xcache_unset($variableName),
+            CacheSystem::apcu => apcu_delete($variableName),
+            CacheSystem::apc => apc_delete($variableName),
+            default => false,
+        };
     }
 
     private static function getVariablePath(string $variableName) : string
@@ -120,24 +103,23 @@ class Cache
         $cacheSystem = self::getInstalledCache();
 
         switch ($cacheSystem) {
-            case self::CACHE_SYSTEM_XCACHE:
+            case CacheSystem::xcache:
+                /** @noinspection ALL */
                 xcache_clear_cache('user');
                 xcache_clear_cache('system');
                 return true;
-                break;
-            case self::CACHE_SYSTEM_APCU:
+            case CacheSystem::apcu:
+                /** @noinspection ALL */
                 apcu_clear_cache();
                 return true;
                 break;
-            case self::CACHE_SYSTEM_APC:
+            case CacheSystem::apc:
                 apc_clear_cache('user');
+                /** @noinspection ALL */
                 apc_clear_cache();
                 return true;
-                break;
             default:
                 return false;
         }
-
-        return true;
     }
 }
