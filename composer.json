@@ -2,7 +2,10 @@
 	"name": "mstodulski/cache",
 	"license": "MIT",
 	"description": "",
-	"keywords": ["library", "apc", "apcu", "xcache"],
+	"require": {
+		"php": ">=8.3"
+	},
+	"keywords": ["library", "apc", "apcu", "xcache", "cache"],
 	"homepage": "https://devsprint.pl",
 	"authors": [
 		{
@@ -19,7 +22,7 @@
 			"/test/"
 		]
 	},
-	"require": {
-		"php": ">=8.1"
+	"require-dev": {
+		"vimeo/psalm": "^6.11"
 	}
 }

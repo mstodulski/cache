@@ -11,6 +11,11 @@
 
 namespace mstodulski\cache;
 
+/**
+ * psalm notice: https://psalm.dev/361
+ * wyjaśnienie: psalm nie wie tego, że ta klasa może być nadpisana w projekcie używającym tej biblioteki
+ * @psalm-suppress ClassMustBeFinal
+ */
 class Cache
 {
     public static function getInstalledCache() : CacheSystem|bool
@@ -26,7 +31,7 @@ class Cache
         }
     }
 
-    public static function checkIfVariableExistsInCache($variableName) : bool
+    public static function checkIfVariableExistsInCache(string $variableName) : bool
     {
         $variableName = self::getVariablePath($variableName);
         $cacheSystem = self::getInstalledCache();
@@ -84,12 +89,11 @@ class Cache
 
     private static function getVariablePath(string $variableName) : string
     {
-        if (isset($_SERVER['HTTP_HOST'])) {
+        if (isset($_SERVER['HTTP_HOST'], $_SERVER['SCRIPT_NAME'])) {
             $rewriteBase = str_replace(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_BASENAME), '', $_SERVER['SCRIPT_NAME']);
             $rewriteBase = trim($rewriteBase, '/');
             $variableName = str_replace('.', '_', $_SERVER['HTTP_HOST']) . '_' . str_replace('/', '_', $rewriteBase) . '_' . $variableName;
-        }
-        else {
+        } elseif (isset($_SERVER['SCRIPT_NAME'])) {
             $rewriteBase = str_replace(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_BASENAME), '', $_SERVER['SCRIPT_NAME']);
             $rewriteBase = trim($rewriteBase, '/');
             $variableName = str_replace('/', '_', $rewriteBase) . '_' . $variableName;
@@ -104,9 +108,14 @@ class Cache
 
         switch ($cacheSystem) {
             case CacheSystem::xcache:
-                /** @noinspection ALL */
-                xcache_clear_cache('user');
-                xcache_clear_cache('system');
+                for ($i = 0; $i < 3; $i++) {
+                    /** @noinspection ALL */
+                    $count = xcache_count($i);
+                    for ($j = 0; $j < $count; $j++) {
+                        /** @noinspection ALL */
+                        xcache_clear_cache($i, $j);
+                    }
+                }
                 return true;
             case CacheSystem::apcu:
                 /** @noinspection ALL */
